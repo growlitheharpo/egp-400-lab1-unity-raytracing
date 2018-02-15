@@ -4,25 +4,13 @@ using UnityEngine;
 public class RayTraceColorRenderer : RayTraceRenderer
 {
     [SerializeField] private Color _color;
-    private Mesh _mesh;
 
-    private List<Vector3> _normals;
-    private List<int> _tris;
-
-    protected override void Awake()
+    public override Color CalculateColor(Ray originalRay, RaycastHit hitInfo, int depth)
     {
-        base.Awake();
-        _mesh = GetComponent<MeshCollider>().sharedMesh;
+        if (depth < 0)
+            return Color.clear;
 
-        _normals = new List<Vector3>();
-        _tris = new List<int>();
-        _mesh.GetNormals(_normals);
-        _mesh.GetTriangles(_tris, 0);
-    }
-
-    public override Color CalculateColor(RaycastHit hitInfo)
-    {
-        Vector3 interpNormal = GetInterpNormal(hitInfo.barycentricCoordinate, _tris, _normals, hitInfo.triangleIndex);
+        Vector3 interpNormal = GetInterpNormal(hitInfo.barycentricCoordinate, hitInfo.normal, hitInfo.triangleIndex);
         Color lightAmt = CalculateLight(hitInfo.point, interpNormal);
 
         Color col = _color * lightAmt;

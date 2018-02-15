@@ -2,7 +2,9 @@
 
 public class RayTracerLab : MonoBehaviour
 {
+    [SerializeField] private bool _autoUpdate;
     [SerializeField] private float _downsampling = 1.0f;
+    [SerializeField] private int _maxDepth = 2;
 
     private Texture2D _canvasTex;
 
@@ -44,7 +46,7 @@ public class RayTracerLab : MonoBehaviour
                 {
                     var comp = raycastHitInfo.collider.GetComponent<RayTraceRenderer>();
                     if (comp != null)
-                        _canvasTex.SetPixel((int)i, (int)j, comp.CalculateColor(raycastHitInfo));
+                        _canvasTex.SetPixel((int)i, (int)j, comp.CalculateColor(ray, raycastHitInfo, _maxDepth));
                     else
                         _canvasTex.SetPixel((int)i, (int)j, black);
                 }
@@ -60,7 +62,7 @@ public class RayTracerLab : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (_autoUpdate || Input.GetKeyDown(KeyCode.Space))
             UpdateRaytrace();
     }
 
